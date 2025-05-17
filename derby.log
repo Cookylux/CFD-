@@ -1,0 +1,33 @@
+Mon Apr 28 22:07:07 AWST 2025 : Apache Derby Network Server - 10.17.1.0 - (1913217) started and ready to accept connections on port 1527
+----------------------------------------------------------------
+Mon Apr 28 22:08:28 AWST 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-0196-7cb9-19d2-000049d2006a 
+on database directory C:\Users\my pc\Documents\hote_booking\hote_booking\Hotel_Booking with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
+Loaded from file:/C:/Users/my%20pc/Documents/db-derby-10.17.1.0-bin/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=21.0.7+8-LTS-245
+user.dir=C:\Users\my pc\Documents\db-derby-10.17.1.0-bin
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=C:\Users\my pc\Documents\hote_booking\hote_booking
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Mon Apr 28 22:08:33 AWST 2025:
+Shutting down instance a816c00e-0196-7cb9-19d2-000049d2006a on database directory C:\Users\my pc\Documents\hote_booking\hote_booking\Hotel_Booking with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
+Mon Apr 28 22:08:34 AWST 2025 Thread[#28,DRDAConnThread_3,5,main] (DATABASE = Hotel_Booking), (DRDAID = {2}), Database 'Hotel_Booking' shutdown.
+----------------------------------------------------------------
+Mon Apr 28 22:09:22 AWST 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance 97e00100-0196-7cb9-19d2-000049d2006a 
+on database directory C:\Users\my pc\Documents\hote_booking\hote_booking\Hotel_Booking with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
+Loaded from file:/C:/Users/my%20pc/Documents/db-derby-10.17.1.0-bin/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=21.0.7+8-LTS-245
+user.dir=C:\Users\my pc\Documents\db-derby-10.17.1.0-bin
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=C:\Users\my pc\Documents\hote_booking\hote_booking
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Apr 29 00:58:47 AWST 2025: Shutting down Derby engine
