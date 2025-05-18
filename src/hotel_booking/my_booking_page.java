@@ -4,18 +4,76 @@
  */
 package hotel_booking;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author rieje
  */
 public class my_booking_page extends javax.swing.JFrame {
-
+    Connection con= javaconnect.connectdb();
+    PreparedStatement ps = null;
+    ResultSet rs=null;
+    DefaultTableModel tbmodel = new DefaultTableModel();
     /**
      * Creates new form my_booking_page
      */
     public my_booking_page() {
         initComponents();
+        user.setText(Current.loggedInUsername);
+        javaconnect.connectdb();
+        Select();
     }
+    private void Select() {
+        
+    String sql = "SELECT name, contact, email, gender, checkin, checkout, pax, roomnum, roomtype, price, status FROM BOOKINGS WHERE username = ?";   
+    String[] columnNames = {"NAME", "CONTACT", "EMAIL", "GENDER", "CHECKIN", "CHECKOUT", "PAX", "ROOMNUM", "ROOMTYPE", "PRICE", "STATUS"};
+    tbmodel.setColumnIdentifiers(columnNames);
+    tbmodel.setRowCount(0);
+
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, Current.loggedInUsername); 
+            rs = ps.executeQuery();
+
+            int x = 0;
+            while (rs.next()) {
+                String name = rs.getString("NAME");
+                String contact = rs.getString("CONTACT");
+                String email = rs.getString("EMAIL");
+                String gender = rs.getString("GENDER");
+                String checkin = rs.getString("CHECKIN");
+                String checkout = rs.getString("CHECKOUT");
+                String pax = rs.getString("PAX");
+                String roomNum = rs.getString("ROOMNUM");
+                String roomType = rs.getString("ROOMTYPE");
+                String price = rs.getString("PRICE");
+                String status = rs.getString("STATUS");
+
+                tbmodel.addRow(new Object[] {name, contact, email, gender, checkin, checkout, pax, roomNum, roomType, price, status});
+                x++;
+            }
+
+            mybookingtb.setModel(tbmodel);
+            mybookingtb.setVisible(x > 0);
+
+            if (x == 0) {
+                JOptionPane.showMessageDialog(this, "No records found.");
+            }
+
+        } catch (SQLException err) {
+            JOptionPane.showMessageDialog(this, "Error retrieving data: " + err.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException e) {}
+            try { if (ps != null) ps.close(); } catch (SQLException e) {}
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,12 +89,13 @@ public class my_booking_page extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        mybookingtb = new javax.swing.JTable();
+        user = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
@@ -69,10 +128,20 @@ public class my_booking_page extends javax.swing.JFrame {
             }
         });
 
+        jLabel16.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("Log-Out");
+        jLabel16.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel16MouseClicked(evt);
+            }
+        });
+
         jLabel15.setBackground(new java.awt.Color(255, 255, 255));
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setText("My Booking");
+        jLabel15.setText("Home");
         jLabel15.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel15MouseClicked(evt);
@@ -84,11 +153,13 @@ public class my_booking_page extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(465, 465, 465)
-                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 352, Short.MAX_VALUE)
+                .addGap(35, 35, 35)
                 .addComponent(jLabel15)
-                .addGap(45, 45, 45))
+                .addGap(388, 388, 388)
+                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 386, Short.MAX_VALUE)
+                .addComponent(jLabel16)
+                .addGap(37, 37, 37))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -97,33 +168,28 @@ public class my_booking_page extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel15)
-                .addGap(29, 29, 29))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel15)
+                        .addGap(21, 21, 21))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addGap(26, 26, 26))))
         );
 
         jScrollPane4.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         jScrollPane4.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "Name", "Contact No.", "Email", "Gender", "Check-in", "Chech-out", "Adult", "Children", "Room Type", "No. of Rooms", "Room No.", "Price"
-            }
-        ));
-        jScrollPane3.setViewportView(jTable2);
+        mybookingtb.setModel(tbmodel);
+        jScrollPane5.setViewportView(mybookingtb);
 
-        jScrollPane4.setViewportView(jScrollPane3);
+        jScrollPane4.setViewportView(jScrollPane5);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 24)); // NOI18N
-        jLabel1.setText("Hello!");
+        user.setFont(new java.awt.Font("Segoe UI Semibold", 0, 36)); // NOI18N
+        user.setText("Name of User");
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 24)); // NOI18N
-        jLabel2.setText("Name of User");
+        jLabel3.setFont(new java.awt.Font("Segoe UI Semibold", 0, 36)); // NOI18N
+        jLabel3.setText("Hello!");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -134,24 +200,24 @@ public class my_booking_page extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(user)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
+                    .addComponent(jLabel3)
+                    .addComponent(user))
+                .addGap(26, 26, 26)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -180,8 +246,16 @@ public class my_booking_page extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jLabel14MouseClicked
 
+    private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
+        home_page n=new home_page();
+        n.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jLabel16MouseClicked
+
     private void jLabel15MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel15MouseClicked
-        // TODO add your handling code here:
+        loggedin_home_page n=new loggedin_home_page();
+        n.setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_jLabel15MouseClicked
 
     /**
@@ -220,16 +294,18 @@ public class my_booking_page extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JTable mybookingtb;
+    private javax.swing.JLabel user;
     // End of variables declaration//GEN-END:variables
 }

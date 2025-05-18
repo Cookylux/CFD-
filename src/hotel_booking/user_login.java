@@ -5,6 +5,8 @@ import java.time.Period;
 import javax.swing.JOptionPane;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import javax.swing.JCheckBox;
+import javax.swing.JPasswordField;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -23,6 +25,8 @@ public class user_login extends javax.swing.JFrame {
      */
     public user_login() {
         initComponents();
+        JPasswordField pass = new JPasswordField(20);
+        JCheckBox cb_show = new JCheckBox("Show Password");
     }
 
     /**
@@ -40,13 +44,13 @@ public class user_login extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         userN = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        bt_login = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         pass = new javax.swing.JPasswordField();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        cb_show = new javax.swing.JCheckBox();
         cb_usertype = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -76,18 +80,19 @@ public class user_login extends javax.swing.JFrame {
         jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 180, 110, -1));
         jPanel2.add(userN, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 120, 340, 27));
 
-        jButton1.setText("Log in");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        bt_login.setText("Log in");
+        bt_login.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                bt_loginActionPerformed(evt);
             }
         });
-        jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 270, -1, -1));
+        jPanel2.add(bt_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 270, -1, -1));
 
         jLabel7.setText("Did you forget your password?");
         jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 340, -1, -1));
 
-        jLabel8.setText("Forget Password");
+        jLabel8.setForeground(new java.awt.Color(0, 153, 255));
+        jLabel8.setText("<html><u>Forget Password</u></html>");
         jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel8MouseClicked(evt);
@@ -98,7 +103,8 @@ public class user_login extends javax.swing.JFrame {
         jLabel9.setText("Don't have an accoun?");
         jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 310, -1, -1));
 
-        jLabel10.setText("Sign up");
+        jLabel10.setForeground(new java.awt.Color(0, 153, 255));
+        jLabel10.setText("<html><u>Sign up</u></html>");
         jLabel10.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel10MouseClicked(evt);
@@ -113,13 +119,13 @@ public class user_login extends javax.swing.JFrame {
         });
         jPanel2.add(pass, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 210, 340, 30));
 
-        jCheckBox1.setText("Show Password");
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        cb_show.setText("Show Password");
+        cb_show.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                cb_showActionPerformed(evt);
             }
         });
-        jPanel2.add(jCheckBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 240, -1, -1));
+        jPanel2.add(cb_show, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 240, -1, -1));
 
         cb_usertype.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select User", "Customer", "Admin" }));
         cb_usertype.addActionListener(new java.awt.event.ActionListener() {
@@ -171,7 +177,7 @@ public class user_login extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jLabel8MouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void bt_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_loginActionPerformed
         String selectedUserType = cb_usertype.getSelectedItem().toString();
         String loginQuery = "";
 
@@ -194,18 +200,29 @@ public class user_login extends javax.swing.JFrame {
             if (rs.next()) {
                 JOptionPane.showMessageDialog(null, "Login Successfully");
 
-                // Assuming you have a class like this:
+               
                 Current.loggedInUsername = userN.getText().trim();
 
                 if ("Admin".equalsIgnoreCase(selectedUserType)) {
                     admin_home adminPage = new admin_home();
                     adminPage.setVisible(true);
                 } else {
-                    loggedin_home_page customerPage = new loggedin_home_page();
-                    customerPage.setVisible(true);
+                    
+                    String check_in = BookingData.checkIn;
+                    String check_out = BookingData.checkOut;
+
+                    if (check_in != null && !check_in.trim().isEmpty()) {
+                        
+                        Registration_page regPage = new Registration_page();
+                        regPage.setVisible(true);
+                    } else {
+                        loggedin_home_page customerPage = new loggedin_home_page();
+                        customerPage.setVisible(true);
+                    }
                 }
 
                 this.setVisible(false);
+
             } else {
                 JOptionPane.showMessageDialog(null, "Wrong Username or Password!");
             }
@@ -214,7 +231,8 @@ public class user_login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Database error: " + ex.getMessage());
         }
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+
+    }//GEN-LAST:event_bt_loginActionPerformed
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
         home_page n=new home_page();
@@ -222,9 +240,13 @@ public class user_login extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jLabel2MouseClicked
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    private void cb_showActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_showActionPerformed
+         if (cb_show.isSelected()) {
+            pass.setEchoChar((char) 0); // Show password
+        } else {
+            pass.setEchoChar('•'); // Mask password again
+        }
+    }//GEN-LAST:event_cb_showActionPerformed
 
     private void passActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passActionPerformed
         // TODO add your handling code here:
@@ -270,9 +292,9 @@ public class user_login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bt_login;
+    private javax.swing.JCheckBox cb_show;
     private javax.swing.JComboBox<String> cb_usertype;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;

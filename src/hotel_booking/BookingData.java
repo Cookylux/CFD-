@@ -19,5 +19,6 @@ public class BookingData {
     public static String roomType;
     public static String roomNum;
     public static String roomNo = "N/A";
-    public static String price;  
+    public static String price;
+    public static String status;
 }

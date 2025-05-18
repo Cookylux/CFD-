@@ -37,6 +37,8 @@ public class signup_page extends javax.swing.JFrame {
 
         jTextField30 = new javax.swing.JTextField();
         jLabel43 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        cb_agree = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jLabel36 = new javax.swing.JLabel();
@@ -49,7 +51,7 @@ public class signup_page extends javax.swing.JFrame {
         txt_fn = new javax.swing.JTextField();
         jLabel42 = new javax.swing.JLabel();
         txt_email = new javax.swing.JTextField();
-        btn_next = new javax.swing.JButton();
+        btn_confirm = new javax.swing.JButton();
         jLabel40 = new javax.swing.JLabel();
         jLabel41 = new javax.swing.JLabel();
         txt_ln = new javax.swing.JTextField();
@@ -58,13 +60,29 @@ public class signup_page extends javax.swing.JFrame {
         txt_pass = new javax.swing.JPasswordField();
         jLabel45 = new javax.swing.JLabel();
         txt_cn = new javax.swing.JTextField();
-        cb_agree = new javax.swing.JCheckBox();
+        cb_agree1 = new javax.swing.JCheckBox();
+        jLabel18 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         jLabel43.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel43.setText("First name:");
+
+        jLabel17.setForeground(new java.awt.Color(0, 153, 255));
+        jLabel17.setText("terms and conditions");
+        jLabel17.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel17MouseClicked(evt);
+            }
+        });
+
+        cb_agree.setText("I agree with the ");
+        cb_agree.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cb_agreeActionPerformed(evt);
+            }
+        });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1060, 597));
@@ -127,13 +145,13 @@ public class signup_page extends javax.swing.JFrame {
         });
         jPanel7.add(txt_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 340, 25));
 
-        btn_next.setText("Confirm");
-        btn_next.addActionListener(new java.awt.event.ActionListener() {
+        btn_confirm.setText("Confirm");
+        btn_confirm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_nextActionPerformed(evt);
+                btn_confirmActionPerformed(evt);
             }
         });
-        jPanel7.add(btn_next, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 480, -1, -1));
+        jPanel7.add(btn_confirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 480, -1, -1));
 
         jLabel40.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel40.setText("Password:");
@@ -167,13 +185,23 @@ public class signup_page extends javax.swing.JFrame {
         });
         jPanel7.add(txt_cn, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, 340, 25));
 
-        cb_agree.setText("I agree with the ");
-        cb_agree.addActionListener(new java.awt.event.ActionListener() {
+        cb_agree1.setText("I agree to the");
+        cb_agree1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cb_agreeActionPerformed(evt);
+                cb_agree1ActionPerformed(evt);
             }
         });
-        jPanel7.add(cb_agree, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 470, -1, -1));
+        jPanel7.add(cb_agree1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 470, -1, -1));
+
+        jLabel18.setForeground(new java.awt.Color(0, 153, 255));
+        jLabel18.setText("terms and conditions");
+        jLabel18.setAlignmentY(0.1F);
+        jLabel18.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel18MouseClicked(evt);
+            }
+        });
+        jPanel7.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 470, -1, -1));
 
         jPanel1.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 20, 500, 530));
 
@@ -221,121 +249,124 @@ public class signup_page extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_bdayActionPerformed
 
-    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
+    private void btn_confirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_confirmActionPerformed
         if (con != null) {
-    if (txt_fn.getText().trim().isEmpty() || txt_ln.getText().trim().isEmpty() ||
-        txt_user.getText().trim().isEmpty() || txt_email.getText().trim().isEmpty() ||
-        txt_bday.getText().trim().isEmpty() || txt_cn.getText().trim().isEmpty() ||
-        txt_pass.getText().trim().isEmpty() || txt_cpass.getText().trim().isEmpty()) {
+            if (txt_fn.getText().trim().isEmpty() || txt_ln.getText().trim().isEmpty() ||
+                txt_user.getText().trim().isEmpty() || txt_email.getText().trim().isEmpty() ||
+                txt_bday.getText().trim().isEmpty() || txt_cn.getText().trim().isEmpty() ||
+                txt_pass.getText().trim().isEmpty() || txt_cpass.getText().trim().isEmpty()) {
 
-        JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    if (!cb_agree.isSelected()) {
-        JOptionPane.showMessageDialog(this, "Please read and accept our terms and conditions!", "Input Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    String email = txt_email.getText().trim();
-    String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-    if (!email.matches(emailRegex)) {
-        JOptionPane.showMessageDialog(this, "Please enter a valid email address.", "Input Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    try {
-        String checkUserSQL = "SELECT * FROM SIGNUP WHERE firstname = ? AND lastname = ? AND username = ? AND email = ?";
-        ps = con.prepareStatement(checkUserSQL);
-        ps.setString(1, txt_fn.getText().trim());
-        ps.setString(2, txt_ln.getText().trim());
-        ps.setString(3, txt_user.getText().trim());
-        ps.setString(4, txt_email.getText().trim());
-
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            JOptionPane.showMessageDialog(this, "User already exists!", "Warning", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        java.sql.Date bday;
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-            LocalDate birthDate = LocalDate.parse(txt_bday.getText().trim(), formatter);
-            LocalDate today = LocalDate.now();
-            int age = Period.between(birthDate, today).getYears();
-
-            if (age < 18) {
-                JOptionPane.showMessageDialog(this, "You must be at least 18 years old to sign up.", "Age Restriction", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            bday = java.sql.Date.valueOf(birthDate);
-
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(null, "Invalid birthday format. Use MM-DD-YYYY", "Input Error!", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            String contactStr = txt_cn.getText().trim();
-            if (!contactStr.matches("\\d{11}")) {
-                JOptionPane.showMessageDialog(null, "Contact number must be exactly 11 digits.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            if (!cb_agree1.isSelected()) {
+                JOptionPane.showMessageDialog(this, "Please read and accept our terms and conditions!", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Contact number must be digits only.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
 
-        String pass = txt_pass.getText();
-        String conpass = txt_cpass.getText();
-        if (!pass.equals(conpass)) {
-            JOptionPane.showMessageDialog(null, "Password do not match!", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+            String email = txt_email.getText().trim();
+            String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+            if (!email.matches(emailRegex)) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid email address.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        String insertSQL = "INSERT INTO SIGNUP (firstname, lastname, username, email, birthday, contactnum, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement insertPs = con.prepareStatement(insertSQL);
-        insertPs.setString(1, txt_fn.getText().trim());
-        insertPs.setString(2, txt_ln.getText().trim());
-        insertPs.setString(3, txt_user.getText().trim());
-        insertPs.setString(4, txt_email.getText().trim());
-        insertPs.setDate(5, bday);
-        insertPs.setString(6, txt_cn.getText().trim());
-        insertPs.setString(7, pass);
+            try {
+                String checkUserSQL = "SELECT * FROM SIGNUP WHERE firstname = ? AND lastname = ? AND username = ? AND email = ?";
+                ps = con.prepareStatement(checkUserSQL);
+                ps.setString(1, txt_fn.getText().trim());
+                ps.setString(2, txt_ln.getText().trim());
+                ps.setString(3, txt_user.getText().trim());
+                ps.setString(4, txt_email.getText().trim());
 
-        int insertedRows = insertPs.executeUpdate();
-        if (insertedRows > 0) {
-            JOptionPane.showMessageDialog(this, "Sign Up Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            Current.loggedInUsername = txt_user.getText().trim();
-            String check_in = BookingData.checkIn;
-            String check_out = BookingData.checkOut;
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(this, "User already exists!", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
 
-            if (check_in == null || check_in.trim().isEmpty()) {
-                Registration_page book = new Registration_page();
-                book.setVisible(true);
-                this.setVisible(false);
-            } else {
-                loggedin_home_page loginhp = new loggedin_home_page();
-                loginhp.setVisible(true);
-                this.setVisible(false);
+                java.sql.Date bday;
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                    LocalDate birthDate = LocalDate.parse(txt_bday.getText().trim(), formatter);
+                    LocalDate today = LocalDate.now();
+                    int age = Period.between(birthDate, today).getYears();
+
+                    if (age < 18) {
+                        JOptionPane.showMessageDialog(this, "You must be at least 18 years old to sign up.", "Age Restriction", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    bday = java.sql.Date.valueOf(birthDate);
+
+                } catch (DateTimeParseException e) {
+                    JOptionPane.showMessageDialog(null, "Invalid birthday format. Use MM-DD-YYYY", "Input Error!", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                try {
+                    String contactStr = txt_cn.getText().trim();
+                    if (!contactStr.matches("\\d{11}")) {
+                        JOptionPane.showMessageDialog(null, "Contact number must be exactly 11 digits.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Contact number must be digits only.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String pass = txt_pass.getText();
+                String conpass = txt_cpass.getText();
+                if (!pass.equals(conpass)) {
+                    JOptionPane.showMessageDialog(null, "Passwords do not match!", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String insertSQL = "INSERT INTO SIGNUP (firstname, lastname, username, email, birthday, contactnum, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement insertPs = con.prepareStatement(insertSQL);
+                insertPs.setString(1, txt_fn.getText().trim());
+                insertPs.setString(2, txt_ln.getText().trim());
+                insertPs.setString(3, txt_user.getText().trim());
+                insertPs.setString(4, txt_email.getText().trim());
+                insertPs.setDate(5, bday);
+                insertPs.setString(6, txt_cn.getText().trim());
+                insertPs.setString(7, pass);
+
+                int insertedRows = insertPs.executeUpdate();
+                if (insertedRows > 0) {
+                    JOptionPane.showMessageDialog(this, "Sign Up Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    Current.loggedInUsername = txt_user.getText().trim();
+                    String check_in = BookingData.checkIn;
+                    String check_out = BookingData.checkOut;
+
+                    if (check_in != null && !check_in.trim().isEmpty()) {
+                        
+                        Registration_page book = new Registration_page();
+                        book.setVisible(true);
+                        this.setVisible(false);
+                    } else {
+                        
+                        loggedin_home_page loginhp = new loggedin_home_page();
+                        loginhp.setVisible(true);
+                        this.setVisible(false);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error during sign-up.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } else {
-            JOptionPane.showMessageDialog(this, "Error during sign-up.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Failed to connect to database", "Connection Error", JOptionPane.ERROR_MESSAGE);
         }
 
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
 
-} else {
-    JOptionPane.showMessageDialog(this, "Failed to connect to database", "Connection Error", JOptionPane.ERROR_MESSAGE);
-}
-
-    }//GEN-LAST:event_btn_nextActionPerformed
+    }//GEN-LAST:event_btn_confirmActionPerformed
 
     private void txt_userActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_userActionPerformed
         // TODO add your handling code here:
@@ -352,6 +383,20 @@ public class signup_page extends javax.swing.JFrame {
     private void cb_agreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_agreeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cb_agreeActionPerformed
+
+    private void jLabel17MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel17MouseClicked
+        terms_and_condition n= new terms_and_condition();
+        n.setVisible(true);
+    }//GEN-LAST:event_jLabel17MouseClicked
+
+    private void cb_agree1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_agree1ActionPerformed
+
+    }//GEN-LAST:event_cb_agree1ActionPerformed
+
+    private void jLabel18MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel18MouseClicked
+        terms_and_condition n= new terms_and_condition();
+        n.setVisible(true);
+    }//GEN-LAST:event_jLabel18MouseClicked
 
     /**
      * @param args the command line arguments
@@ -389,10 +434,13 @@ public class signup_page extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btn_next;
+    private javax.swing.JButton btn_confirm;
     private javax.swing.JCheckBox cb_agree;
+    private javax.swing.JCheckBox cb_agree1;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel38;

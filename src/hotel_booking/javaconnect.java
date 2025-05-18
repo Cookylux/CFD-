@@ -25,7 +25,7 @@ public class javaconnect {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             // Connect to MySQL database
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel", "root", "jela1011");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/room_management", "root", "Hatdog08_");
             stmt = con.createStatement();
             return con;
         } catch (ClassNotFoundException | SQLException ex) {
