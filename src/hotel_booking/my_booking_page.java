@@ -129,7 +129,7 @@ public class my_booking_page extends javax.swing.JFrame {
         });
 
         jLabel16.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setText("Log-Out");
         jLabel16.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -139,7 +139,7 @@ public class my_booking_page extends javax.swing.JFrame {
         });
 
         jLabel15.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Home");
         jLabel15.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -247,6 +247,7 @@ public class my_booking_page extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel14MouseClicked
 
     private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
+        JOptionPane.showMessageDialog(this, "Logout Succesfully!");
         home_page n=new home_page();
         n.setVisible(true);
         this.setVisible(false);
@@ -302,7 +303,6 @@ public class my_booking_page extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTable mybookingtb;

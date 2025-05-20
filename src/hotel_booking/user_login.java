@@ -52,6 +52,7 @@ public class user_login extends javax.swing.JFrame {
         pass = new javax.swing.JPasswordField();
         cb_show = new javax.swing.JCheckBox();
         cb_usertype = new javax.swing.JComboBox<>();
+        back = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
@@ -69,7 +70,7 @@ public class user_login extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Nirmala Text", 1, 24)); // NOI18N
         jLabel4.setText("Log in");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 30, -1, -1));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
         jLabel5.setText("Email/Username:");
@@ -135,6 +136,14 @@ public class user_login extends javax.swing.JFrame {
         });
         jPanel2.add(cb_usertype, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 150, -1, -1));
 
+        back.setText("Back");
+        back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backActionPerformed(evt);
+            }
+        });
+        jPanel2.add(back, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 420, -1, -1));
+
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 60, 498, 460));
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0, 80));
@@ -166,7 +175,7 @@ public class user_login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
-        signup_page n= new signup_page();
+        signup_page n= new signup_page(this);
         n.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jLabel10MouseClicked
@@ -256,6 +265,12 @@ public class user_login extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_cb_usertypeActionPerformed
 
+    private void backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backActionPerformed
+    home_page hPage = new home_page();
+    hPage.setVisible(true);
+    this.setVisible(false);
+    }//GEN-LAST:event_backActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -292,6 +307,7 @@ public class user_login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton back;
     private javax.swing.JButton bt_login;
     private javax.swing.JCheckBox cb_show;
     private javax.swing.JComboBox<String> cb_usertype;

@@ -10,6 +10,7 @@ import java.time.Period;
 import javax.swing.JOptionPane;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import javax.swing.JFrame;
 
 /**
  *
@@ -22,8 +23,12 @@ public class signup_page extends javax.swing.JFrame {
     /**
      * Creates new form signup_page
      */
-    public signup_page() {
+    private JFrame parentFrame;
+    
+    public signup_page(JFrame parent) {
+        this.parentFrame = parent;
         initComponents();
+        
     }
 
     /**
@@ -62,6 +67,7 @@ public class signup_page extends javax.swing.JFrame {
         txt_cn = new javax.swing.JTextField();
         cb_agree1 = new javax.swing.JCheckBox();
         jLabel18 = new javax.swing.JLabel();
+        Back = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -97,33 +103,33 @@ public class signup_page extends javax.swing.JFrame {
 
         jLabel36.setFont(new java.awt.Font("Nirmala Text", 1, 24)); // NOI18N
         jLabel36.setText("Sign up");
-        jPanel7.add(jLabel36, new org.netbeans.lib.awtextra.AbsoluteConstraints(208, 24, 109, -1));
+        jPanel7.add(jLabel36, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 10, 109, -1));
 
         jLabel37.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel37.setText("Username:");
-        jPanel7.add(jLabel37, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 110, -1, -1));
+        jPanel7.add(jLabel37, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 100, -1, -1));
 
         jLabel38.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel38.setText("Birthday:");
-        jPanel7.add(jLabel38, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 170, -1, -1));
+        jPanel7.add(jLabel38, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 160, -1, -1));
 
         jLabel39.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel39.setText("Email:");
-        jPanel7.add(jLabel39, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, -1, -1));
+        jPanel7.add(jLabel39, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 220, -1, -1));
 
         txt_user.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txt_userActionPerformed(evt);
             }
         });
-        jPanel7.add(txt_user, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 140, 340, 25));
+        jPanel7.add(txt_user, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 130, 340, 25));
 
         txt_bday.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txt_bdayActionPerformed(evt);
             }
         });
-        jPanel7.add(txt_bday, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 200, 340, 25));
+        jPanel7.add(txt_bday, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 190, 340, 25));
 
         jButton6.setText("Confirm");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -132,18 +138,18 @@ public class signup_page extends javax.swing.JFrame {
             }
         });
         jPanel7.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(554, 346, -1, -1));
-        jPanel7.add(txt_fn, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 80, 160, 25));
+        jPanel7.add(txt_fn, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 70, 160, 25));
 
         jLabel42.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel42.setText("First name:");
-        jPanel7.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, -1, -1));
+        jPanel7.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 40, -1, -1));
 
         txt_email.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txt_emailActionPerformed(evt);
             }
         });
-        jPanel7.add(txt_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 340, 25));
+        jPanel7.add(txt_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 250, 340, 25));
 
         btn_confirm.setText("Confirm");
         btn_confirm.addActionListener(new java.awt.event.ActionListener() {
@@ -151,39 +157,39 @@ public class signup_page extends javax.swing.JFrame {
                 btn_confirmActionPerformed(evt);
             }
         });
-        jPanel7.add(btn_confirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 480, -1, -1));
+        jPanel7.add(btn_confirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 490, -1, -1));
 
         jLabel40.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel40.setText("Password:");
-        jPanel7.add(jLabel40, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 350, -1, -1));
+        jPanel7.add(jLabel40, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 340, -1, -1));
 
         jLabel41.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel41.setText("Last name:");
-        jPanel7.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 50, -1, -1));
+        jPanel7.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 40, -1, -1));
 
         txt_ln.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txt_lnActionPerformed(evt);
             }
         });
-        jPanel7.add(txt_ln, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 80, 160, 25));
+        jPanel7.add(txt_ln, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 70, 160, 25));
 
         jLabel44.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel44.setText("Confirm Password:");
-        jPanel7.add(jLabel44, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 410, -1, -1));
-        jPanel7.add(txt_cpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 440, 340, 30));
-        jPanel7.add(txt_pass, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 380, 340, 30));
+        jPanel7.add(jLabel44, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 400, -1, -1));
+        jPanel7.add(txt_cpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 430, 340, 30));
+        jPanel7.add(txt_pass, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 370, 340, 30));
 
         jLabel45.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel45.setText("Contact Number:");
-        jPanel7.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 290, -1, -1));
+        jPanel7.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 280, -1, -1));
 
         txt_cn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txt_cnActionPerformed(evt);
             }
         });
-        jPanel7.add(txt_cn, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, 340, 25));
+        jPanel7.add(txt_cn, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 310, 340, 25));
 
         cb_agree1.setText("I agree to the");
         cb_agree1.addActionListener(new java.awt.event.ActionListener() {
@@ -191,7 +197,7 @@ public class signup_page extends javax.swing.JFrame {
                 cb_agree1ActionPerformed(evt);
             }
         });
-        jPanel7.add(cb_agree1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 470, -1, -1));
+        jPanel7.add(cb_agree1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 460, -1, -1));
 
         jLabel18.setForeground(new java.awt.Color(0, 153, 255));
         jLabel18.setText("terms and conditions");
@@ -201,7 +207,15 @@ public class signup_page extends javax.swing.JFrame {
                 jLabel18MouseClicked(evt);
             }
         });
-        jPanel7.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 470, -1, -1));
+        jPanel7.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 460, -1, -1));
+
+        Back.setText("Back");
+        Back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BackActionPerformed(evt);
+            }
+        });
+        jPanel7.add(Back, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, -1, -1));
 
         jPanel1.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 20, 500, 530));
 
@@ -230,13 +244,11 @@ public class signup_page extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        home_page n=new home_page();
-        n.setVisible(true);
-        this.setVisible(false);
+
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        booking_page n=new booking_page();
+        Registration_page n=new Registration_page();
         n.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton6ActionPerformed
@@ -259,7 +271,17 @@ public class signup_page extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            
+            String nameRegex = "^[A-Za-z]+$";
+            if (!txt_fn.getText().trim().matches(nameRegex)) {
+                JOptionPane.showMessageDialog(this, "First name must contain only letters.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
+            if (!txt_ln.getText().trim().matches(nameRegex)) {
+                JOptionPane.showMessageDialog(this, "Last name must contain only letters.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             if (!cb_agree1.isSelected()) {
                 JOptionPane.showMessageDialog(this, "Please read and accept our terms and conditions!", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -306,9 +328,9 @@ public class signup_page extends javax.swing.JFrame {
                 }
 
                 try {
-                    String contactStr = txt_cn.getText().trim();
-                    if (!contactStr.matches("\\d{11}")) {
-                        JOptionPane.showMessageDialog(null, "Contact number must be exactly 11 digits.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                String contactStr = txt_cn.getText().trim();
+                    if (!contactStr.matches("09\\d{9}")) {
+                        JOptionPane.showMessageDialog(null, "Contact number must start with '09' and be exactly 11 digits.", "Input Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 } catch (NumberFormatException e) {
@@ -337,20 +359,18 @@ public class signup_page extends javax.swing.JFrame {
                 if (insertedRows > 0) {
                     JOptionPane.showMessageDialog(this, "Sign Up Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                     Current.loggedInUsername = txt_user.getText().trim();
-                    String check_in = BookingData.checkIn;
-                    String check_out = BookingData.checkOut;
+                    
 
-                    if (check_in != null && !check_in.trim().isEmpty()) {
-                        
+                    if (TransferBookSpinner.InDate != null && TransferBookSpinner.OutDate != null) {
                         Registration_page book = new Registration_page();
                         book.setVisible(true);
                         this.setVisible(false);
                     } else {
-                        
                         loggedin_home_page loginhp = new loggedin_home_page();
                         loginhp.setVisible(true);
                         this.setVisible(false);
-                    }
+}
+
 
                 } else {
                     JOptionPane.showMessageDialog(this, "Error during sign-up.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -398,6 +418,13 @@ public class signup_page extends javax.swing.JFrame {
         n.setVisible(true);
     }//GEN-LAST:event_jLabel18MouseClicked
 
+    private void BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackActionPerformed
+    this.dispose();             // close the Signup frame
+    if (parentFrame != null) {
+        parentFrame.setVisible(true);  // show the parent frame again
+    }     // TODO add your handling code here:
+    }//GEN-LAST:event_BackActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -428,12 +455,13 @@ public class signup_page extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new signup_page().setVisible(true);
+                new signup_page(null).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Back;
     private javax.swing.JButton btn_confirm;
     private javax.swing.JCheckBox cb_agree;
     private javax.swing.JCheckBox cb_agree1;

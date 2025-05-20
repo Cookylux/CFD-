@@ -5,10 +5,13 @@
 package hotel_booking;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -78,26 +81,40 @@ public class booking_details_page extends javax.swing.JFrame {
     String userName = username.getText().trim();
     String selectedStatus = (String) cb_stat.getSelectedItem();
 
-    if (roomNumber.isEmpty() || userName.isEmpty() || selectedStatus == null || selectedStatus.trim().isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Room number, username, and status are required.");
-        return;
+   
+    StringBuilder sql = new StringBuilder("SELECT name, contact, email, gender, checkin, checkout, pax, roomnum, roomtype, price, username, status FROM BOOKINGS WHERE 1=1");
+    List<String> parameters = new ArrayList<>();
+
+    if (!userName.isEmpty()) {
+        sql.append(" AND username = ?");
+        parameters.add(userName);
+    }
+    if (!roomNumber.isEmpty()) {
+        sql.append(" AND roomnum = ?");
+        parameters.add(roomNumber);
+    }
+    if (selectedStatus != null && !selectedStatus.trim().isEmpty() && !selectedStatus.equals("Select Status")) {
+        sql.append(" AND status = ?");
+        parameters.add(selectedStatus);
     }
 
-    String sql = "SELECT name, contact, email, gender, checkin, checkout, pax, roomnum, roomtype, price, username, status " +
-                 "FROM BOOKINGS WHERE username = ? AND roomnum = ? AND status = ?";
+    if (parameters.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Please provide at least one filter (Username, Room Number, or Status).");
+        return;
+    }
 
     String[] columnNames = {"NAME", "CONTACT", "EMAIL", "GENDER", "CHECKIN", "CHECKOUT", "PAX", "ROOMNUM", "ROOMTYPE", "PRICE", "USERNAME", "STATUS"};
     tbmodel.setColumnIdentifiers(columnNames);
     tbmodel.setRowCount(0);  // Clear previous data
 
-    try (PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setString(1, userName);
-        ps.setString(2, roomNumber);
-        ps.setString(3, selectedStatus);
+    try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
+        for (int i = 0; i < parameters.size(); i++) {
+            ps.setString(i + 1, parameters.get(i));
+        }
 
         ResultSet rs = ps.executeQuery();
-
         int count = 0;
+
         while (rs.next()) {
             tbmodel.addRow(new Object[] {
                 rs.getString("NAME"),
@@ -151,10 +168,12 @@ public class booking_details_page extends javax.swing.JFrame {
         roomnum = new javax.swing.JTextField();
         username = new javax.swing.JTextField();
         cb_stat = new javax.swing.JComboBox<>();
-        btn_accept = new javax.swing.JButton();
+        btn_search = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         bookdetailstb = new javax.swing.JTable();
-        btn_accept1 = new javax.swing.JButton();
+        btn_update = new javax.swing.JButton();
+        clear = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1060, 597));
@@ -167,7 +186,7 @@ public class booking_details_page extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(32, 33, 67));
-        jButton1.setText("Bookig Details");
+        jButton1.setText("Booking Details");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -251,52 +270,71 @@ public class booking_details_page extends javax.swing.JFrame {
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Booking Details");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(603, 17, -1, -1));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 20, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel4.setText("Username:");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 110, -1, -1));
+        jLabel4.setText("Status:");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 150, -1, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel9.setText("Room Number:");
-        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 150, -1, -1));
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 110, -1, -1));
 
         roomnum.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 roomnumActionPerformed(evt);
             }
         });
-        jPanel1.add(roomnum, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 140, 140, 31));
-        jPanel1.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 100, 140, 31));
+        jPanel1.add(roomnum, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 100, 140, 31));
+        jPanel1.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 60, 140, 31));
 
         cb_stat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Status", "Pending", "Accepted", "Completed", "Declined" }));
-        jPanel1.add(cb_stat, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 150, -1, -1));
+        jPanel1.add(cb_stat, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 150, -1, -1));
 
-        btn_accept.setBackground(new java.awt.Color(204, 255, 204));
-        btn_accept.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btn_accept.setText("Search");
-        btn_accept.addActionListener(new java.awt.event.ActionListener() {
+        btn_search.setBackground(new java.awt.Color(153, 204, 255));
+        btn_search.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btn_search.setText("Search");
+        btn_search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_acceptActionPerformed(evt);
+                btn_searchActionPerformed(evt);
             }
         });
-        jPanel1.add(btn_accept, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 110, -1, -1));
+        jPanel1.add(btn_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 60, -1, -1));
 
         bookdetailstb.setModel(tbmodel);
         bookdetailstb.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        bookdetailstb.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bookdetailstbMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(bookdetailstb);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 190, 780, 390));
 
-        btn_accept1.setBackground(new java.awt.Color(204, 255, 204));
-        btn_accept1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btn_accept1.setText("Update");
-        btn_accept1.addActionListener(new java.awt.event.ActionListener() {
+        btn_update.setBackground(new java.awt.Color(204, 255, 204));
+        btn_update.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btn_update.setText("Update");
+        btn_update.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_accept1ActionPerformed(evt);
+                btn_updateActionPerformed(evt);
             }
         });
-        jPanel1.add(btn_accept1, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 150, -1, -1));
+        jPanel1.add(btn_update, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 100, -1, -1));
+
+        clear.setBackground(new java.awt.Color(255, 153, 153));
+        clear.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        clear.setText("Clear");
+        clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearActionPerformed(evt);
+            }
+        });
+        jPanel1.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 140, -1, -1));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setText("Username:");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 70, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -325,7 +363,10 @@ public class booking_details_page extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
+      JOptionPane.showMessageDialog(this, "Logout Succesfully!");
+      home_page n=new home_page();
+      n.setVisible(true);
+      this.setVisible(false);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -344,15 +385,84 @@ public class booking_details_page extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_roomnumActionPerformed
 
-    private void btn_acceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_acceptActionPerformed
+    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         searchBookingStatus();
 
 
-    }//GEN-LAST:event_btn_acceptActionPerformed
+    }//GEN-LAST:event_btn_searchActionPerformed
 
-    private void btn_accept1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_accept1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_accept1ActionPerformed
+    private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
+        String[] columnNames = {"NAME", "CONTACT", "EMAIL", "GENDER", "CHECKIN", "CHECKOUT", "PAX", "ROOMNUM", "ROOMTYPE", "PRICE", "USERNAME", "STATUS"};
+        tbmodel.setColumnIdentifiers(columnNames);
+        tbmodel.setRowCount(0);
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            String checkQuery = "SELECT Status FROM Bookings WHERE Roomnum = ? AND Username = ?";
+            ps = con.prepareStatement(checkQuery);
+            ps.setString(1, roomnum.getText());
+            ps.setString(2, username.getText());
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String currentStatus = rs.getString("Status");
+                if (currentStatus.equalsIgnoreCase("Declined") || currentStatus.equalsIgnoreCase("Completed")) {
+                    JOptionPane.showMessageDialog(this, "Cannot update. Booking is already " + currentStatus + ".");
+                    Select();
+                } else {
+                    ps = con.prepareStatement("UPDATE Bookings SET Status = ? WHERE Roomnum = ? AND Username = ?");
+                    ps.setString(1, cb_stat.getSelectedItem().toString());
+                    ps.setString(2, roomnum.getText());
+                    ps.setString(3, username.getText());
+
+                    ps.executeUpdate();
+                    JOptionPane.showMessageDialog(this, "Record Updated");
+                    Select();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Booking not found.");
+            }
+
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(room_management_page.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            java.util.logging.Logger.getLogger(room_management_page.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException e) {}
+            try { if (ps != null) ps.close(); } catch (SQLException e) {}
+        }
+
+    }//GEN-LAST:event_btn_updateActionPerformed
+
+    private void bookdetailstbMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookdetailstbMouseClicked
+        int row = bookdetailstb.getSelectedRow();
+        if (row >= 0) {
+            DefaultTableModel model = (DefaultTableModel) bookdetailstb.getModel();
+
+            if (model.getColumnCount() > 11) {
+                String roomNumber = model.getValueAt(row, 7).toString();
+                String userName = model.getValueAt(row, 10).toString();
+                String status = model.getValueAt(row, 11).toString();
+
+                cb_stat.setSelectedItem(status);
+                username.setText(userName);
+
+                if (roomNumber.matches("R(0[1-9]|1[0-9]|20)")) {
+                    roomnum.setText(roomNumber);
+                }
+            } else {
+                System.out.println("Error: Table does not have enough columns. Found only " + model.getColumnCount());
+            }
+        }
+
+    }//GEN-LAST:event_bookdetailstbMouseClicked
+
+    private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
+        username.setText("");  // Clear Username field
+        roomnum.setText("");  // Clear Room Number field
+        cb_stat.setSelectedIndex(0);
+        Select();
+    }//GEN-LAST:event_clearActionPerformed
 
     /**
      * @param args the command line arguments
@@ -391,15 +501,17 @@ public class booking_details_page extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable bookdetailstb;
-    private javax.swing.JButton btn_accept;
-    private javax.swing.JButton btn_accept1;
+    private javax.swing.JButton btn_search;
+    private javax.swing.JButton btn_update;
     private javax.swing.JComboBox<String> cb_stat;
+    private javax.swing.JButton clear;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;

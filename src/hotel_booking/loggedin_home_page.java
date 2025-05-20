@@ -47,8 +47,8 @@ public class loggedin_home_page extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         mybook = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
 
@@ -205,22 +205,12 @@ public class loggedin_home_page extends javax.swing.JFrame {
         });
 
         mybook.setBackground(new java.awt.Color(255, 255, 255));
-        mybook.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
+        mybook.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         mybook.setForeground(new java.awt.Color(255, 255, 255));
         mybook.setText("My Booking");
         mybook.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 mybookMouseClicked(evt);
-            }
-        });
-
-        jLabel15.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setText("Home");
-        jLabel15.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel15MouseClicked(evt);
             }
         });
 
@@ -234,37 +224,47 @@ public class loggedin_home_page extends javax.swing.JFrame {
             }
         });
 
+        jLabel18.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setText("Log-Out");
+        jLabel18.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel18MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(49, 49, 49)
-                .addComponent(jLabel15)
                 .addGap(50, 50, 50)
                 .addComponent(jLabel16)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 285, Short.MAX_VALUE)
-                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(312, 312, 312)
+                .addGap(36, 36, 36)
                 .addComponent(mybook)
-                .addGap(72, 72, 72))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
+                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(366, 366, 366)
+                .addComponent(jLabel18)
+                .addGap(44, 44, 44))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(mybook)
-                        .addGap(32, 32, 32)))
+                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15)
-                    .addComponent(jLabel16))
-                .addGap(33, 33, 33))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel16)
+                            .addComponent(mybook))
+                        .addGap(38, 38, 38))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel18)
+                        .addGap(39, 39, 39))))
         );
 
         getContentPane().add(jPanel1);
@@ -300,29 +300,29 @@ public class loggedin_home_page extends javax.swing.JFrame {
     private void bt_bookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_bookActionPerformed
         Date Idate = (Date) date_in.getValue();
         Date Odate = (Date) date_out.getValue();
-        Date today = new Date(); // Get today's date
+        Date today = new Date(); 
 
-        // Check if check-in is in the past
+        
         if (Idate.before(today)) {
             JOptionPane.showMessageDialog(this, "Check-in date cannot be in the past.", "Date Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Check if check-out is before check-in
+        
         if (Odate.before(Idate)) {
             JOptionPane.showMessageDialog(this, "Check-out date cannot be before Check-in date.", "Date Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Set values to spinner (optional unless you're modifying them)
+        
         date_in.setValue(Idate);
         date_out.setValue(Odate);
 
-        // Convert to java.sql.Date if needed
+        
         java.sql.Date checkin = new java.sql.Date(Idate.getTime());
         java.sql.Date checkout = new java.sql.Date(Odate.getTime());
 
-        // Store in transfer class or wherever needed
+        
         TransferBookSpinner.InDate = Idate;
         TransferBookSpinner.OutDate = Odate;
         TransferBookSpinner.adults = (Integer) spin_adult.getValue();
@@ -333,17 +333,18 @@ public class loggedin_home_page extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_bt_bookActionPerformed
 
-    private void jLabel15MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel15MouseClicked
-        home_page n=new home_page();
-        n.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_jLabel15MouseClicked
-
     private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
         stay_page n=new stay_page();
         n.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jLabel16MouseClicked
+
+    private void jLabel18MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel18MouseClicked
+      JOptionPane.showMessageDialog(this, "Logout Succesfully!");
+      home_page n=new home_page();
+      n.setVisible(true);
+      this.setVisible(false);
+    }//GEN-LAST:event_jLabel18MouseClicked
 
     /**
      * @param args the command line arguments
@@ -389,8 +390,8 @@ public class loggedin_home_page extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

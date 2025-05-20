@@ -4,6 +4,8 @@
  */
 package hotel_booking;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author rieje
@@ -164,7 +166,10 @@ public class admin_home extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
+      JOptionPane.showMessageDialog(this, "Logout Succesfully!");
+      home_page n=new home_page();
+      n.setVisible(true);
+      this.setVisible(false);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

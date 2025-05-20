@@ -161,6 +161,153 @@ public class Registration_page extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+    private void processBooking() {
+        java.sql.Date checkin = null;
+        java.sql.Date checkout = null;
+        String status = "Pending";
+        if (name.getText().trim().isEmpty() || contact.getText().trim().isEmpty() || email.getText().trim().isEmpty() ||
+        cb_gender.getSelectedItem() == null || cb_roomtype.getSelectedItem() == null || cb_roomnum.getSelectedItem() == null ||
+        spin_pax.getValue() == null) {
+
+        JOptionPane.showMessageDialog(this, "Please fill out all fields before proceeding.", "Missing Info", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+        try {
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+            LocalDate checkInDate = LocalDate.parse(check_in.getText().trim(), formatter);
+            LocalDate checkOutDate = LocalDate.parse(check_out.getText().trim(), formatter);
+
+            if (checkOutDate.isBefore(checkInDate)) {
+                JOptionPane.showMessageDialog(this, "Check-out date cannot be before Check-in date.", "Date Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (name.getText().trim().isEmpty() || contact.getText().trim().isEmpty() || email.getText().trim().isEmpty() ||
+                cb_gender.getSelectedItem() == null || cb_roomtype.getSelectedItem() == null || cb_roomnum.getSelectedItem() == null ||
+                spin_pax.getValue() == null) {
+
+                JOptionPane.showMessageDialog(this, "Please fill out all fields before proceeding.", "Missing Info", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            String nameRegex = "^[A-Za-z]+$";
+            if (!name.getText().trim().matches(nameRegex)) {
+                JOptionPane.showMessageDialog(this, "Name contain only letters.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String iemail = email.getText().trim();
+            String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+            if (!iemail.matches(emailRegex)) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid email address.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+             try {
+                String contactStr = contact.getText().trim();
+                    if (!contactStr.matches("09\\d{9}")) {
+                        JOptionPane.showMessageDialog(null, "Contact number must start with '09' and be exactly 11 digits.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Contact number must be digits only.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            
+            String selectedGender = cb_gender.getSelectedItem().toString();
+            if (selectedGender.equals("Select Gender")) {
+                JOptionPane.showMessageDialog(this, "Please select a valid gender.", "Input Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int pax = Integer.parseInt(spin_pax.getValue().toString());
+            if (pax == 0){
+                JOptionPane.showMessageDialog(this, "Please input number of people.", "Input Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String roomType = cb_roomtype.getSelectedItem().toString();
+            String roomNum = cb_roomnum.getSelectedItem().toString();
+
+            int capacity = switch (roomType) {
+                case "Single Room" -> 2;
+                case "Double Room", "Triple Room" -> 4;
+                case "Quad Room" -> 6;
+                default -> 1;
+            };
+
+            if (pax > capacity) {
+                JOptionPane.showMessageDialog(this,
+                    "Selected room type cannot accommodate this many guests.\n" +
+                    "Room type: " + roomType + "\n" +
+                    "Capacity: " + capacity + "\n" +
+                    "Guests: " + pax,
+                    "Capacity Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String availabilitySQL = "SELECT UNAVAILDATES FROM UNAVAILROOMS WHERE ROOMNUM = ?";
+            PreparedStatement ps = con.prepareStatement(availabilitySQL);
+            ps.setString(1, roomNum);
+            ResultSet rs = ps.executeQuery();
+
+            boolean conflict = false;
+            while (rs.next()) {
+                LocalDate unavailDate = rs.getDate("UNAVAILDATES").toLocalDate();
+                if (!unavailDate.isBefore(checkInDate) && unavailDate.isBefore(checkOutDate)) {
+                    conflict = true;
+                    break;
+                }
+            }
+            rs.close();
+            ps.close();
+
+            if (conflict) {
+                JOptionPane.showMessageDialog(this, "Selected room is not available during chosen dates.", "Room Unavailable", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            checkin = java.sql.Date.valueOf(checkInDate);
+            checkout = java.sql.Date.valueOf(checkOutDate);
+
+            String insertSQL = "INSERT INTO BOOKINGS (name, contact, email, gender, checkin, checkout, pax, roomnum, roomtype, price, username, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement insertPs = con.prepareStatement(insertSQL);
+            insertPs.setString(1, name.getText().trim());
+            insertPs.setString(2, contact.getText().trim());
+            insertPs.setString(3, email.getText().trim());
+            insertPs.setString(4, cb_gender.getSelectedItem().toString());
+            insertPs.setDate(5, checkin);
+            insertPs.setDate(6, checkout);
+            insertPs.setString(7, String.valueOf(pax));
+            insertPs.setString(8, roomNum);
+            insertPs.setString(9, roomType);
+            insertPs.setString(10, ""); // Price removed as per your request
+            insertPs.setString(11, Current.loggedInUsername);
+            insertPs.setString(12, status);
+            insertPs.executeUpdate();
+            insertPs.close();
+
+            String unavailableSQL = "INSERT INTO UNAVAILROOMS (ROOMNUM, UNAVAILDATES) VALUES (?, ?)";
+            PreparedStatement unavailablePs = con.prepareStatement(unavailableSQL);
+
+            for (LocalDate date = checkInDate; date.isBefore(checkOutDate); date = date.plusDays(1)) {
+                unavailablePs.setString(1, roomNum);
+                unavailablePs.setDate(2, java.sql.Date.valueOf(date));
+                unavailablePs.addBatch();
+            }
+
+            unavailablePs.executeBatch();
+            unavailablePs.close();
+            con.close();
+
+            JOptionPane.showMessageDialog(this, "Booking Successful!");
+            new loggedin_home_page().setVisible(true);
+            this.setVisible(false);
+
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Invalid date format. Use MM-DD-YYYY", "Date Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Something went wrong while processing the booking.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -207,6 +354,7 @@ public class Registration_page extends javax.swing.JFrame {
         jLabel16 = new javax.swing.JLabel();
         spin_pax = new javax.swing.JSpinner();
         jLabel14 = new javax.swing.JLabel();
+        bt_home = new javax.swing.JButton();
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Price", "₱2,999", "₱9,599", "₱15,600", "₱20,000" }));
 
@@ -239,45 +387,63 @@ public class Registration_page extends javax.swing.JFrame {
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
         jLabel2.setText("Booking");
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 10, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel3.setText("Name:");
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 60, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel4.setText("Contact Number:");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 130, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel5.setText("Email:");
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 200, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel7.setText("Check-in:");
+        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 60, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel8.setText("Check-out:");
+        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 110, -1, -1));
 
         jLabel11.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel11.setText("Room Type:");
+        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 210, -1, -1));
 
         jLabel12.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel12.setText("Available Room:");
+        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 260, -1, -1));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel13.setText("Price:");
+        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 310, -1, -1));
 
         price.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 priceActionPerformed(evt);
             }
         });
+        jPanel2.add(price, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 330, 250, 30));
+        jPanel2.add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 80, 250, 30));
+        jPanel2.add(contact, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 150, 220, 30));
 
         email.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 emailActionPerformed(evt);
             }
         });
+        jPanel2.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 220, 290, 30));
+        jPanel2.add(check_in, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 80, 230, 30));
+        jPanel2.add(check_out, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 130, 230, 30));
+
+        jPanel2.add(cb_roomnum, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 280, 180, 30));
 
         proceed.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         proceed.setText("Proceed");
@@ -286,11 +452,14 @@ public class Registration_page extends javax.swing.JFrame {
                 proceedActionPerformed(evt);
             }
         });
+        jPanel2.add(proceed, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 400, 130, 40));
 
         jLabel15.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel15.setText("Gender:");
+        jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 270, -1, -1));
 
         cb_gender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Gender", "Male", "Female" }));
+        jPanel2.add(cb_gender, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 290, 210, 30));
 
         cb_roomtype.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Room Type", "Single Room", "Double Room", "Triple Room", "Quad Room" }));
         cb_roomtype.addActionListener(new java.awt.event.ActionListener() {
@@ -298,128 +467,14 @@ public class Registration_page extends javax.swing.JFrame {
                 cb_roomtypeActionPerformed(evt);
             }
         });
+        jPanel2.add(cb_roomtype, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 230, 210, 30));
 
         jLabel16.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
         jLabel16.setText("Pax:");
+        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 160, -1, -1));
+        jPanel2.add(spin_pax, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 180, 100, 30));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(390, 390, 390)
-                        .addComponent(jLabel2))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(70, 70, 70)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(180, 180, 180)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(check_in, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(70, 70, 70)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(contact, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)
-                            .addComponent(email, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
-                        .addGap(140, 140, 140)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(check_out, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel16)
-                            .addComponent(spin_pax, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cb_roomtype, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(70, 70, 70)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel15)
-                            .addComponent(cb_gender, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(220, 220, 220)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel12)
-                            .addComponent(cb_roomnum, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(price, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel13))))
-                .addGap(110, 110, 110))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addComponent(proceed, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jLabel2)
-                .addGap(24, 24, 24)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel7)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(check_in, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(contact, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel4))
-                        .addGap(20, 20, 20)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(email, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel5)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(check_out, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel8))
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(spin_pax, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(cb_roomtype, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel11))))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel15)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(cb_gender, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel12)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(cb_roomnum, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(price, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel13))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
-                .addComponent(proceed, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14))
-        );
-
-        jPanel3.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 60, -1, -1));
+        jPanel3.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 60, 850, 470));
 
         jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hotel_booking/logo 120.png"))); // NOI18N
         jLabel14.setText("jLabel14");
@@ -428,7 +483,16 @@ public class Registration_page extends javax.swing.JFrame {
                 jLabel14MouseClicked(evt);
             }
         });
-        jPanel3.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 120, -1));
+        jPanel3.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 120, -1));
+
+        bt_home.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        bt_home.setText("Home");
+        bt_home.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_homeActionPerformed(evt);
+            }
+        });
+        jPanel3.add(bt_home, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 100, 40));
 
         getContentPane().add(jPanel3);
         jPanel3.setBounds(0, 0, 1060, 590);
@@ -441,110 +505,7 @@ public class Registration_page extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel14MouseClicked
 
     private void proceedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedActionPerformed
-        java.sql.Date checkin = null;
-    java.sql.Date checkout = null;
-    String status = "Pending";
-
-    try {
-        // Parse dates
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-        LocalDate checkInDate = LocalDate.parse(check_in.getText().trim(), formatter);
-        LocalDate checkOutDate = LocalDate.parse(check_out.getText().trim(), formatter);
-
-        checkin = java.sql.Date.valueOf(checkInDate);
-        checkout = java.sql.Date.valueOf(checkOutDate);
-
-        if (checkOutDate.isBefore(checkInDate)) {
-            JOptionPane.showMessageDialog(this, "Check-out date cannot be before Check-in date.", "Date Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (name.getText().trim().isEmpty() || contact.getText().trim().isEmpty() || email.getText().trim().isEmpty() ||
-            cb_gender.getSelectedItem() == null || cb_roomtype.getSelectedItem() == null || cb_roomnum.getSelectedItem() == null ||
-            spin_pax.getValue() == null) {
-
-            JOptionPane.showMessageDialog(this, "Please fill out all fields before proceeding.", "Missing Info", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int pax = Integer.parseInt(spin_pax.getValue().toString());
-        String roomType = cb_roomtype.getSelectedItem().toString();
-
-        int peoplePerRoom = switch (roomType) {
-            case "Single Room" -> 2;
-            case "Double Room" -> 4;
-            case "Triple Room" -> 4;
-            case "Quad Room" -> 6;
-            default -> 1;
-        };
-
-        if (pax > peoplePerRoom) {
-            JOptionPane.showMessageDialog(this,
-                "Total people exceed the capacity for the selected room(s).\n" +
-                "Room type: " + roomType + "\n" +
-                "Total capacity: " + peoplePerRoom + "\n" +
-                "People: " + pax,
-                "Room Capacity Exceeded", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        String priceText = price.getText();
-        double totalPrice = 0.0;
-
-        try {
-            String[] parts = priceText.split("=");
-            if (parts.length == 2) {
-                String totalPart = parts[1].replaceAll("[^\\d.]", "");
-                totalPrice = Double.parseDouble(totalPart);
-            }
-        } catch (Exception e) {
-            totalPrice = 0.0;
-        }
-
-        
-        String insertSQL = "INSERT INTO BOOKINGS (name, contact, email, gender, checkin, checkout, pax, roomnum, roomtype, price, username, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        PreparedStatement insertPs = con.prepareStatement(insertSQL);
-        insertPs.setString(1, name.getText().trim());
-        insertPs.setString(2, contact.getText().trim());
-        insertPs.setString(3, email.getText().trim());
-        insertPs.setString(4, cb_gender.getSelectedItem().toString().trim());
-        insertPs.setDate(5, checkin);
-        insertPs.setDate(6, checkout);
-        insertPs.setString(7, spin_pax.getValue().toString().trim());
-        insertPs.setString(8, cb_roomnum.getSelectedItem().toString().trim());
-        insertPs.setString(9, cb_roomtype.getSelectedItem().toString().trim());
-        insertPs.setString(10, String.valueOf(totalPrice));
-        insertPs.setString(11, Current.loggedInUsername);
-        insertPs.setString(12,status);
-        insertPs.executeUpdate();
-        insertPs.close();
-
-        String roomNum = cb_roomnum.getSelectedItem().toString();
-
-        String unavailableSQL = "INSERT INTO UNAVAILROOMS (ROOMNUM, UNAVAILDATES) VALUES (?, ?)";
-        PreparedStatement unavailablePs = con.prepareStatement(unavailableSQL);
-
-        for (LocalDate date = checkInDate; date.isBefore(checkOutDate); date = date.plusDays(1)) {
-            unavailablePs.setString(1, roomNum);
-            unavailablePs.setDate(2, java.sql.Date.valueOf(date));
-            unavailablePs.addBatch();  // More efficient
-        }
-
-        unavailablePs.executeBatch();
-        unavailablePs.close();
-        con.close();
-
-        JOptionPane.showMessageDialog(this, "Booking Successful");
-        new loggedin_home_page().setVisible(true);
-        this.setVisible(false);
-
-    } catch (DateTimeParseException e) {
-        JOptionPane.showMessageDialog(this, "Invalid date format. Use MM-DD-YYYY", "Date Error", JOptionPane.ERROR_MESSAGE);
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Something went wrong while booking.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
+    processBooking();
     }//GEN-LAST:event_proceedActionPerformed
 
     private void priceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priceActionPerformed
@@ -566,6 +527,12 @@ public class Registration_page extends javax.swing.JFrame {
             loadAvailableRoomsByType(selectedType);
         }        
     }//GEN-LAST:event_cb_roomtypeActionPerformed
+
+    private void bt_homeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_homeActionPerformed
+       loggedin_home_page n=new loggedin_home_page();
+       n.setVisible(true);
+       this.setVisible(false);
+    }//GEN-LAST:event_bt_homeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -606,6 +573,7 @@ public class Registration_page extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bt_home;
     private javax.swing.JComboBox<String> cb_gender;
     private javax.swing.JComboBox<String> cb_roomnum;
     private javax.swing.JComboBox<String> cb_roomtype;

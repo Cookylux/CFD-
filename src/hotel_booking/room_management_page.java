@@ -236,7 +236,7 @@ public class room_management_page extends javax.swing.JFrame {
                 bt_addActionPerformed(evt);
             }
         });
-        jPanel1.add(bt_add, new org.netbeans.lib.awtextra.AbsoluteConstraints(786, 538, -1, -1));
+        jPanel1.add(bt_add, new org.netbeans.lib.awtextra.AbsoluteConstraints(796, 538, 60, -1));
 
         bt_delete.setBackground(new java.awt.Color(255, 204, 204));
         bt_delete.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -405,7 +405,10 @@ public class room_management_page extends javax.swing.JFrame {
     }//GEN-LAST:event_bt_addActionPerformed
 
     private void bt_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_logoutActionPerformed
-        // TODO add your handling code here:
+      JOptionPane.showMessageDialog(this, "Logout Succesfully!");
+      home_page n=new home_page();
+      n.setVisible(true);
+      this.setVisible(false);
     }//GEN-LAST:event_bt_logoutActionPerformed
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
